@@ -1,0 +1,139 @@
+import tkinter as tk
+from tkinter import messagebox
+
+# Shared task storage
+tasks = []
+
+# ---------------- CLI Functions ----------------
+def show_menu():
+    print("\n===== TO-DO LIST MENU =====")
+    print("1. View Tasks")
+    print("2. Add Task")
+    print("3. Update Task")
+    print("4. Delete Task")
+    print("5. Exit")
+
+def view_tasks():
+    if not tasks:
+        print("No tasks found.")
+    else:
+        print("\nYour Tasks:")
+        for i, task in enumerate(tasks, 1):
+            print(f"{i}. {task}")
+
+def add_task_cli():
+    task = input("Enter new task: ")
+    tasks.append(task)
+    print("Task added successfully!")
+
+def update_task_cli():
+    view_tasks()
+    try:
+        task_no = int(input("Enter task number to update: ")) - 1
+        if 0 <= task_no < len(tasks):
+            new_task = input("Enter updated task: ")
+            tasks[task_no] = new_task
+            print("Task updated successfully!")
+        else:
+            print("Invalid task number.")
+    except ValueError:
+        print("Please enter a valid number.")
+
+def delete_task_cli():
+    view_tasks()
+    try:
+        task_no = int(input("Enter task number to delete: ")) - 1
+        if 0 <= task_no < len(tasks):
+            removed = tasks.pop(task_no)
+            print(f"Task '{removed}' deleted.")
+        else:
+            print("Invalid task number.")
+    except ValueError:
+        print("Please enter a valid number.")
+
+def run_cli():
+    while True:
+        show_menu()
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            view_tasks()
+        elif choice == "2":
+            add_task_cli()
+        elif choice == "3":
+            update_task_cli()
+        elif choice == "4":
+            delete_task_cli()
+        elif choice == "5":
+            print("Exiting CLI To-Do List. Goodbye!")
+            break
+        else:
+            print("Invalid choice! Try again.")
+
+# ---------------- GUI Functions ----------------
+def add_task():
+    task = task_entry.get()
+    if task != "":
+        tasks.append(task)
+        listbox.insert(tk.END, task)
+        task_entry.delete(0, tk.END)
+    else:
+        messagebox.showwarning("Warning", "Please enter a task!")
+
+def delete_task():
+    try:
+        selected = listbox.curselection()[0]
+        tasks.pop(selected)
+        listbox.delete(selected)
+    except:
+        messagebox.showwarning("Warning", "Please select a task to delete!")
+
+def update_task():
+    try:
+        selected = listbox.curselection()[0]
+        new_task = task_entry.get()
+        if new_task != "":
+            tasks[selected] = new_task
+            listbox.delete(selected)
+            listbox.insert(selected, new_task)
+            task_entry.delete(0, tk.END)
+        else:
+            messagebox.showwarning("Warning", "Please enter updated task!")
+    except:
+        messagebox.showwarning("Warning", "Please select a task to update!")
+
+def run_gui():
+    global task_entry, listbox
+    root = tk.Tk()
+    root.title("To-Do List App")
+
+    task_entry = tk.Entry(root, width=40)
+    task_entry.pack(pady=10)
+
+    add_btn = tk.Button(root, text="Add Task", command=add_task)
+    add_btn.pack(pady=5)
+
+    update_btn = tk.Button(root, text="Update Task", command=update_task)
+    update_btn.pack(pady=5)
+
+    delete_btn = tk.Button(root, text="Delete Task", command=delete_task)
+    delete_btn.pack(pady=5)
+
+    listbox = tk.Listbox(root, width=50, height=10)
+    listbox.pack(pady=10)
+
+    root.mainloop()
+
+# ---------------- Main ----------------
+if __name__ == "__main__":
+    print("Choose Mode: ")
+    print("1. Command-Line Mode")
+    print("2. GUI Mode")
+    mode = input("Enter choice (1/2): ")
+
+    if mode == "1":
+        run_cli()
+    elif mode == "2":
+        run_gui()
+    else:
+        print("Invalid choice! Exiting.")
